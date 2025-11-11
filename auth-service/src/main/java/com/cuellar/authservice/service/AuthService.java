@@ -8,10 +8,17 @@ import com.cuellar.authservice.dto.UserDTO;
 import com.cuellar.authservice.repository.UserRepository;
 import com.cuellar.authservice.security.TokenBlacklist;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cloud.stream.function.StreamBridge;
+import org.springframework.messaging.Message;
+import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestClient;
+import org.springframework.cloud.stream.function.StreamBridge;
+
+import org.springframework.messaging.support.MessageBuilder;
 
 import java.util.List;
 import java.util.UUID;
@@ -22,18 +29,15 @@ import java.util.stream.Collectors;
 public class AuthService {
 
     private final UserRepository userRepository;
-
     private final PasswordEncoder passwordEncoder;
-
     private final JwtService jwtService;
-
     private final TokenBlacklist tokenBlacklist;
     private final RestClient.Builder builder;
 
-
+    // Publisher de eventos (StreamBridge) para enviar a userCreated-out-0
+    private final StreamBridge streamBridge;
 
     // ----UTILS-----
-
     private UserDTO toDto(User user) {
         return UserDTO.builder()
                 .id(user.getId())
@@ -43,23 +47,33 @@ public class AuthService {
                 .build();
     }
 
+    private void publishUserCreated(String userUUID) {
+        com.cuellar.authservice.events.UserCreatedEvent event =
+                new com.cuellar.authservice.events.UserCreatedEvent(userUUID, System.currentTimeMillis());
 
+        Message<com.cuellar.authservice.events.UserCreatedEvent> msg =
+                MessageBuilder.withPayload(event)
+                        .setHeaderIfAbsent("type", "UserCreated")
+                        .build();
+
+        boolean accepted = streamBridge.send("userCreated-out-0", msg);
+        if (!accepted) {
+            // log.warn("UserCreated event not accepted by binder for UUID {}", userUUID);
+        }
+    }
 
     // ------ CREATE-----
-
+    @Transactional
     public UserDTO register(RegisterRequest request){
-
         if (userRepository.existsByEmail(request.getEmail())) {
-            throw new IllegalArgumentException("Email already exists"); //si el email ya se encuentra registrado entonces
+            throw new IllegalArgumentException("Email already exists");
         }
-
         if (userRepository.existsByUsername(request.getUsername())) {
-            throw new IllegalArgumentException("Username already exists"); // si el usuario ya se encuentra registrado entonces
+            throw new IllegalArgumentException("Username already exists");
         }
 
         User user = User.builder()
                 .name(request.getName())
-
                 .username(request.getUsername())
                 .email(request.getEmail())
                 .passwordHash(passwordEncoder.encode(request.getPassword()))
@@ -67,8 +81,11 @@ public class AuthService {
                 .build();
 
         user = userRepository.save(user);
-        return toDto(user);
 
+        // Publicar evento de usuario creado (se provisionará en CRUD)
+        publishUserCreated(user.getId().toString());
+
+        return toDto(user);
     }
 
     // ---------- READ ACTIVOS ----------
@@ -78,7 +95,6 @@ public class AuthService {
                 .map(this::toDto)
                 .collect(Collectors.toList());
     }
-
 
     // ---------- READ ----------
     public List<UserDTO> getAllUsers() {
@@ -91,12 +107,11 @@ public class AuthService {
         return toDto(user);
     }
 
-
     // ------ UPDATE ------
+    @Transactional
     public UserDTO updateUser(UUID id, UserDTO dto){
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado"));
-
         user.setName(dto.getName());
         user.setEmail(dto.getEmail());
         user.setEnabled(dto.isEnabled());
@@ -104,14 +119,12 @@ public class AuthService {
         return toDto(user);
     }
 
-
-
     // ---------- DELETE ----------
+    @Transactional
     public void deleteUser(UUID id, String token) {
         if (token == null || token.isBlank()) {
             throw new IllegalArgumentException("Token vacío.");
         }
-        // Limpia el token si viene con "Bearer "
         if (token.startsWith("Bearer ")) {
             token = token.substring(7).trim();
         } else {
@@ -128,8 +141,8 @@ public class AuthService {
         userRepository.deleteById(id);
     }
 
-
     // ---------- SOFT DELETE / DESACTIVAR ----------
+    @Transactional
     public void setUserEnabled(UUID id, boolean enabled) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado"));
@@ -137,9 +150,8 @@ public class AuthService {
         userRepository.save(user);
     }
 
-
     // ------- LOGIN ------
-
+    @Transactional
     public LoginResponse login(LoginRequest request){
         User user = userRepository.findByUsername(request.getUsername())
                 .orElseThrow(() -> new IllegalArgumentException("Usuario o contraseña incorrectos"));
@@ -147,16 +159,19 @@ public class AuthService {
             throw new BadCredentialsException("Usuario o contraseña incorrectos");
         }
 
+        boolean wasDisabled = !user.isEnabled();
         user.setEnabled(true);
         user = userRepository.save(user);
+
+        // Si el usuario nunca fue provisionado, opcionalmente podrías volver a publicar
+        // publishUserCreated(user.getId().toString());
 
         String token = jwtService.generateToken(user);
         return new LoginResponse(token, toDto(user));
     }
 
-
     // ------ LOGOUT -----
-
+    @Transactional
     public void logut(String token){
         if (token == null || token.isBlank()) {
             throw new IllegalArgumentException("Token vacío");
@@ -174,6 +189,4 @@ public class AuthService {
         userRepository.save(user);
         tokenBlacklist.blacklistToken(token);
     }
-
 }
-
