@@ -50,6 +50,15 @@ public class Transaction {
     @Column(name = "status", nullable = false, length = 20)
     private String status = "COMPLETADA";
 
+    // RELACIONES CON ACCOUNT
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "cuenta_origen_id")
+    private Account cuentaOrigenAccount;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "cuenta_destino_id")
+    private Account cuentaDestinoAccount;
+
     public Transaction() {}
 
     @PrePersist
@@ -99,4 +108,10 @@ public class Transaction {
 
     public String getStatus() { return status; }
     public void setStatus(String status) { this.status = status; }
+
+    public Account getCuentaOrigenAccount() { return cuentaOrigenAccount; }
+    public void setCuentaOrigenAccount(Account cuentaOrigenAccount) { this.cuentaOrigenAccount = cuentaOrigenAccount; }
+
+    public Account getCuentaDestinoAccount() { return cuentaDestinoAccount; }
+    public void setCuentaDestinoAccount(Account cuentaDestinoAccount) { this.cuentaDestinoAccount = cuentaDestinoAccount; }
 }

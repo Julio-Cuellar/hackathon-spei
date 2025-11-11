@@ -1,15 +1,18 @@
 package com.cuellar.transactionservice.service;
 
+import com.cuellar.transactionservice.domain.Account;
 import com.cuellar.transactionservice.domain.Transaction;
 import com.cuellar.transactionservice.domain.TransactionType;
 import com.cuellar.transactionservice.dto.PagoServicioRequest;
 import com.cuellar.transactionservice.dto.TransactionResponse;
 import com.cuellar.transactionservice.dto.TransferenciaRequest;
+import com.cuellar.transactionservice.repository.AccountRepository;
 import com.cuellar.transactionservice.repository.TransactionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -20,8 +23,39 @@ public class TransactionService {
     @Autowired
     private TransactionRepository transactionRepository;
 
+    @Autowired
+    private AccountRepository accountRepository;
+
+    @Autowired
+    private AccountService accountService;
+
     @Transactional
     public TransactionResponse createTransferencia(TransferenciaRequest request) {
+        // Buscar cuenta origen por CLABE
+        Account cuentaOrigen = accountRepository.findByCuentaClave(request.getCuentaOrigen())
+                .orElseThrow(() -> new RuntimeException("Cuenta origen no encontrada: " + request.getCuentaOrigen()));
+
+        // Buscar cuenta destino por CLABE
+        Account cuentaDestino = accountRepository.findByCuentaClave(request.getCuentaDestino())
+                .orElseThrow(() -> new RuntimeException("Cuenta destino no encontrada: " + request.getCuentaDestino()));
+
+        // Validar que la cuenta origen esté activa (puede enviar dinero)
+        accountService.validateAccountCanSend(cuentaOrigen);
+
+        // Validar que haya saldo suficiente
+        if (cuentaOrigen.getSaldo().compareTo(request.getMonto()) < 0) {
+            throw new RuntimeException("Saldo insuficiente. Saldo actual: " + cuentaOrigen.getSaldo() + ", Monto a transferir: " + request.getMonto());
+        }
+
+        // Actualizar saldos
+        cuentaOrigen.setSaldo(cuentaOrigen.getSaldo().subtract(request.getMonto()));
+        cuentaDestino.setSaldo(cuentaDestino.getSaldo().add(request.getMonto()));
+
+        // Guardar cuentas actualizadas
+        accountRepository.save(cuentaOrigen);
+        accountRepository.save(cuentaDestino);
+
+        // Crear la transacción
         Transaction transaction = new Transaction();
         transaction.setTransactionType(TransactionType.TRANSFERENCIA);
         transaction.setMonto(request.getMonto());
@@ -31,6 +65,10 @@ public class TransactionService {
         transaction.setConcepto(request.getConcepto());
         transaction.setFechaHora(LocalDateTime.now());
         transaction.setStatus("COMPLETADA");
+
+        // Relacionar con las cuentas
+        transaction.setCuentaOrigenAccount(cuentaOrigen);
+        transaction.setCuentaDestinoAccount(cuentaDestino);
 
         Transaction saved = transactionRepository.save(transaction);
         return mapToResponse(saved);
