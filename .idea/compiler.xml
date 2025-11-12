@@ -10,7 +10,7 @@
         <module name="eureka-server" />
         <module name="transaction-service" />
       </profile>
-      <profile name="Annotation profile for transaction-service" enabled="true">
+      <profile name="Annotation profile for auth-service" enabled="true">
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
@@ -20,13 +20,16 @@
         <module name="auth-service" />
       </profile>
     </annotationProcessing>
-    <bytecodeTargetLevel target="17" />
+    <bytecodeTargetLevel target="17">
+      <module name="transact-service" target="17" />
+    </bytecodeTargetLevel>
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
       <module name="api-gateway" options="-parameters" />
       <module name="auth-service" options="-parameters" />
       <module name="eureka-server" options="-parameters" />
+      <module name="financial-struments-service" options="-parameters" />
       <module name="transaction-service" options="-parameters" />
     </option>
   </component>
