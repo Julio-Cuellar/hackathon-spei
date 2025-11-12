@@ -7,6 +7,7 @@ import com.cuellar.authservice.dto.UserDTO;
 import com.cuellar.authservice.service.AuthService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -23,9 +24,10 @@ public class AuthController {
 
     @PostMapping("/register")
     public ResponseEntity<UserDTO> register(@Valid @RequestBody RegisterRequest req) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(auth.register(req));
+        // AuthService debe persistir y publicar el evento UserCreated
+        UserDTO created = auth.register(req);
+        return ResponseEntity.status(HttpStatus.CREATED).body(created);
     }
-
 
     @PostMapping("/login")
     public ResponseEntity<LoginResponse> login(@RequestBody LoginRequest request) {
@@ -34,34 +36,29 @@ public class AuthController {
     }
 
     @PostMapping("/logout")
-    public ResponseEntity<?> logout(@RequestHeader("Authorization") String authHeader){
+    public ResponseEntity<Void> logout(@RequestHeader(HttpHeaders.AUTHORIZATION) String authHeader) {
         auth.logut(authHeader);
         return ResponseEntity.ok().build();
     }
 
     @GetMapping("/user/{id}")
     public ResponseEntity<UserDTO> getUserById(@PathVariable UUID id){
-        UserDTO userDTO = auth.getUserById(id);
-        return ResponseEntity.ok(userDTO);
+        return ResponseEntity.ok(auth.getUserById(id));
     }
 
     @GetMapping("/users")
     public ResponseEntity<List<UserDTO>> getAllUsers(){
-        List<UserDTO> users = auth.getAllUsers();
-        return ResponseEntity.ok(users);
+        return ResponseEntity.ok(auth.getAllUsers());
     }
 
     @PutMapping("/user/{id}")
     public ResponseEntity<UserDTO> updateUser(@PathVariable UUID id, @Valid @RequestBody UserDTO userDTO){
-        UserDTO updateuser = auth.updateUser(id, userDTO);
-        return ResponseEntity.ok(updateuser);
+        return ResponseEntity.ok(auth.updateUser(id, userDTO));
     }
 
     @DeleteMapping("/user/{id}")
-    public ResponseEntity<Void> deleteUser(@PathVariable UUID id, @RequestHeader("Authorization")  String authHeader){
+    public ResponseEntity<Void> deleteUser(@PathVariable UUID id, @RequestHeader(HttpHeaders.AUTHORIZATION) String authHeader){
         auth.deleteUser(id, authHeader);
         return ResponseEntity.noContent().build();
     }
-
-
 }

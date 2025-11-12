@@ -1,6 +1,6 @@
 package com.cuellar.transactionservice.service;
 
-import com.cuellar.transactionservice.domain.Account;
+import com.cuellar.transactionservice.domain.User;
 import com.cuellar.transactionservice.dto.AccountResponse;
 import com.cuellar.transactionservice.dto.CreateAccountRequest;
 import com.cuellar.transactionservice.repository.AccountRepository;
@@ -18,12 +18,25 @@ public class AccountService {
     @Autowired
     private AccountRepository accountRepository;
 
+    // Idempotente: provisiona una cuenta/usuario por UUID cuando llegue el evento
+    @Transactional
+    public void ensureAccountByUuid(String uuid) {
+        accountRepository.findByUuid(uuid).orElseGet(() -> {
+            User user = new User();
+            user.setUuid(uuid);
+            user.setSaldo(BigDecimal.ZERO);
+            // setea otros defaults si aplica (activa=true, generar cuentaClave, etc.)
+            // p.ej. user.setActiva(Boolean.TRUE);
+            return accountRepository.save(user);
+        });
+    }
+
     @Transactional
     public AccountResponse createAccount(CreateAccountRequest request) {
-        Account account = new Account();
-        account.setSaldo(request.getSaldoInicial() != null ? request.getSaldoInicial() : BigDecimal.ZERO);
-
-        Account saved = accountRepository.save(account);
+        User user = new User();
+        user.setSaldo(request.getSaldoInicial() != null ? request.getSaldoInicial() : BigDecimal.ZERO);
+        // si CreateAccountRequest lleva uuid/cuentaClave, setéalos aquí
+        User saved = accountRepository.save(user);
         return mapToResponse(saved);
     }
 
@@ -34,47 +47,47 @@ public class AccountService {
     }
 
     public AccountResponse getAccountById(Long id) {
-        Account account = accountRepository.findById(id)
+        User user = accountRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Cuenta no encontrada con id: " + id));
-        return mapToResponse(account);
+        return mapToResponse(user);
     }
 
     public AccountResponse getAccountByUuid(String uuid) {
-        Account account = accountRepository.findByUuid(uuid)
+        User user = accountRepository.findByUuid(uuid)
                 .orElseThrow(() -> new RuntimeException("Cuenta no encontrada con UUID: " + uuid));
-        return mapToResponse(account);
+        return mapToResponse(user);
     }
 
     public AccountResponse getAccountByCuentaClave(String cuentaClave) {
-        Account account = accountRepository.findByCuentaClave(cuentaClave)
+        User user = accountRepository.findByCuentaClave(cuentaClave)
                 .orElseThrow(() -> new RuntimeException("Cuenta no encontrada con CLABE: " + cuentaClave));
-        return mapToResponse(account);
+        return mapToResponse(user);
     }
 
     @Transactional
     public AccountResponse toggleAccountStatus(Long id) {
-        Account account = accountRepository.findById(id)
+        User user = accountRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Cuenta no encontrada con id: " + id));
-        account.setActiva(!account.getActiva());
-        Account saved = accountRepository.save(account);
+        user.setActiva(!user.getActiva());
+        User saved = accountRepository.save(user);
         return mapToResponse(saved);
     }
 
-    // Método auxiliar para validar si una cuenta puede enviar dinero
-    public void validateAccountCanSend(Account account) {
-        if (!account.getActiva()) {
+    // Validación de negocio
+    public void validateAccountCanSend(User user) {
+        if (!user.getActiva()) {
             throw new RuntimeException("La cuenta está deshabilitada y no puede enviar dinero. Solo puede recibir.");
         }
     }
 
-    private AccountResponse mapToResponse(Account account) {
+    private AccountResponse mapToResponse(User user) {
         AccountResponse response = new AccountResponse();
-        response.setId(account.getId());
-        response.setUuid(account.getUuid());
-        response.setCuentaClave(account.getCuentaClave());
-        response.setSaldo(account.getSaldo());
-        response.setFechaCreacion(account.getFechaCreacion());
-        response.setActiva(account.getActiva());
+        response.setId(user.getId());
+        response.setUuid(user.getUuid());
+        response.setCuentaClave(user.getCuentaClave());
+        response.setSaldo(user.getSaldo());
+        response.setFechaCreacion(user.getFechaCreacion());
+        response.setActiva(user.getActiva());
         return response;
     }
 }

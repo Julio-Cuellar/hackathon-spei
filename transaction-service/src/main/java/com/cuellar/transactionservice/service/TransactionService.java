@@ -1,6 +1,6 @@
 package com.cuellar.transactionservice.service;
 
-import com.cuellar.transactionservice.domain.Account;
+import com.cuellar.transactionservice.domain.User;
 import com.cuellar.transactionservice.domain.Transaction;
 import com.cuellar.transactionservice.domain.TransactionType;
 import com.cuellar.transactionservice.dto.PagoServicioRequest;
@@ -12,7 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -32,11 +31,11 @@ public class TransactionService {
     @Transactional
     public TransactionResponse createTransferencia(TransferenciaRequest request) {
         // Buscar cuenta origen por CLABE
-        Account cuentaOrigen = accountRepository.findByCuentaClave(request.getCuentaOrigen())
+        User cuentaOrigen = accountRepository.findByCuentaClave(request.getCuentaOrigen())
                 .orElseThrow(() -> new RuntimeException("Cuenta origen no encontrada: " + request.getCuentaOrigen()));
 
         // Buscar cuenta destino por CLABE
-        Account cuentaDestino = accountRepository.findByCuentaClave(request.getCuentaDestino())
+        User cuentaDestino = accountRepository.findByCuentaClave(request.getCuentaDestino())
                 .orElseThrow(() -> new RuntimeException("Cuenta destino no encontrada: " + request.getCuentaDestino()));
 
         // Validar que la cuenta origen esté activa (puede enviar dinero)

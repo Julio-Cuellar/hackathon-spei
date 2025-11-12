@@ -1,15 +1,15 @@
 package com.cuellar.transactionservice.repository;
 
-import com.cuellar.transactionservice.domain.Account;
+import com.cuellar.transactionservice.domain.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 
 @Repository
-public interface AccountRepository extends JpaRepository<Account, Long> {
+public interface AccountRepository extends JpaRepository<User, Long> {
 
-    Optional<Account> findByUuid(String uuid);
-    Optional<Account> findByCuentaClave(String cuentaClave);
+    Optional<User> findByUuid(String uuid);
+    Optional<User> findByCuentaClave(String cuentaClave);
     boolean existsByCuentaClave(String cuentaClave);
 }
