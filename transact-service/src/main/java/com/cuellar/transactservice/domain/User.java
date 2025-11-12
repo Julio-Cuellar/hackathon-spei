@@ -41,22 +41,13 @@ public class User {
 
     @PrePersist
     public void generateIdentifiers() {
-        if (this.userUUID == null) {
-            this.userUUID = UUID.randomUUID().toString();
-        }
-        if (this.cuentaClave == null) {
-            this.cuentaClave = generateCuentaClave();
-        }
+
         if (this.fechaCreacion == null) {
             this.fechaCreacion = LocalDateTime.now();
         }
     }
 
-    private String generateCuentaClave() {
-        // Genera una CLABE interbancaria aleatoria de 18 dígitos
-        long clabe = (long) (Math.random() * 900000000000000000L) + 100000000000000000L;
-        return String.valueOf(clabe);
-    }
+
 
     // ==================== GETTERS Y SETTERS ====================
 

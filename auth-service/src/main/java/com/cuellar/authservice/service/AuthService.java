@@ -42,6 +42,7 @@ public class AuthService {
         return UserDTO.builder()
                 .id(user.getId())
                 .name(user.getName())
+                .lastName(user.getLastName())
                 .email(user.getEmail())
                 .RFC(user.getRFC())
                 .CURP(user.getCURP())
@@ -78,6 +79,9 @@ public class AuthService {
         User user = User.builder()
                 .name(request.getName())
                 .username(request.getUsername())
+                .lastName(request.getLastName())
+                .RFC(request.getRFC())
+                .CURP(request.getCURP())
                 .email(request.getEmail())
                 .passwordHash(passwordEncoder.encode(request.getPassword()))
                 .RFC(request.getRFC())
@@ -88,7 +92,6 @@ public class AuthService {
 
         user = userRepository.save(user);
 
-        // Publicar evento de usuario creado (se provisionará en CRUD)
         publishUserCreated(user.getId().toString());
 
         return toDto(user);

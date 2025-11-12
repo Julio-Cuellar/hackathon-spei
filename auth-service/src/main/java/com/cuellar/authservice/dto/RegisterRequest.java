@@ -12,7 +12,10 @@ public class RegisterRequest {
 
     public String name;
 
+    public String lastName;
+
     public String username;
+
 
     private String email;
 
