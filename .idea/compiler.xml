@@ -8,9 +8,8 @@
         <outputRelativeToContentRoot value="true" />
         <module name="api-gateway" />
         <module name="eureka-server" />
-        <module name="financial-struments-service" />
       </profile>
-      <profile name="Annotation profile for banks-service" enabled="true">
+      <profile name="Annotation profile for transact-service" enabled="true">
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
