@@ -45,4 +45,30 @@ public class UserService {
                     return userRepository.save(newUser);
                 });
     }
+
+    // Nuevo método para actualizar cuenta CLABE desde evento
+    @Transactional
+    public void updateCuentaClabe(String userUUID, String cuentaClabe, String bankName) {
+        User user = userRepository.findByUserUUID(userUUID)
+                .orElseThrow(() -> {
+                    log.error("Usuario no encontrado para UUID: {}", userUUID);
+                    return new RuntimeException("User not found: " + userUUID);
+                });
+
+        // Solo actualizar si los valores han cambiado (idempotencia)
+        boolean updated = false;
+
+        if (cuentaClabe != null && !cuentaClabe.equals(user.getCuentaClabe())) {
+            user.setCuentaClabe(cuentaClabe);
+            updated = true;
+        }
+
+        if (updated) {
+            userRepository.save(user);
+            log.info("Cuenta CLABE actualizada para usuario UUID={}: CLABE={}",
+                    userUUID, cuentaClabe);
+        } else {
+            log.debug("Cuenta CLABE sin cambios para usuario UUID={}", userUUID);
+        }
+    }
 }

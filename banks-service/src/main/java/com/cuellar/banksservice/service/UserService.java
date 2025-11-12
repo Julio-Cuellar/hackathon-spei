@@ -1,49 +1,29 @@
 package com.cuellar.banksservice.service;
 
 import com.cuellar.banksservice.domain.User;
-import com.cuellar.banksservice.dto.CreateUserResponse;
+import com.cuellar.banksservice.dto.UpdateCuentaClabeRequest;
 import com.cuellar.banksservice.dto.UserDTO;
 import com.cuellar.banksservice.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class UserService {
 
     private final UserRepository userRepository;
+    private final BankEventPublisher eventPublisher;
 
-    @Transactional
-    public CreateUserResponse createUser(UserDTO userDTO) {
-        // VALIDACIÓN IMPORTANTE: El UUID debe venir del request
-        if (userDTO.getUUID() == null || userDTO.getUUID().trim().isEmpty()) {
-            throw new IllegalArgumentException("UUID is required and must be provided by the calling service");
-        }
-
-        User user = User.builder()
-                .UUID(userDTO.getUUID())
-                .name(userDTO.getName())
-                .lastName(userDTO.getLastName())
-                .bankName(userDTO.getBankName())
-                .numeroCuenta(userDTO.getNumeroCuenta())
-                .cuentaClabe(userDTO.getCuentaClabe())
-                .monto("0.00")
-                .build();
-
-        User savedUser = userRepository.save(user);
-
-        return CreateUserResponse.builder()
-                .UUID(savedUser.getUUID())
-                .name(savedUser.getName())
-                .lastName(savedUser.getLastName())
-                .bankName(savedUser.getBankName())
-                .numeroCuenta(savedUser.getNumeroCuenta())
-                .cuentaClabe(savedUser.getCuentaClabe())
-                .build();
+    @Transactional(readOnly = true)
+    public Optional<User> findByUUID(String userUUID) {
+        return userRepository.findByUUID(userUUID);
     }
 
     public List<UserDTO> getAllUsers() {
@@ -58,22 +38,78 @@ public class UserService {
         return convertToDTO(user);
     }
 
+    // NUEVO MÉTODO: Agregar cuenta CLABE y publicar evento
+    @Transactional
+    public UserDTO addCuentaClabe(String UUID, UpdateCuentaClabeRequest request) {
+        User user = userRepository.findByUUID(UUID)
+                .orElseThrow(() -> new RuntimeException("User not found with UUID: " + UUID));
+
+        // Verificar si la cuenta CLABE cambió
+        boolean cuentaClabeChanged = !request.getCuentaClabe().equals(user.getCuentaClabe());
+
+        // Actualizar campos bancarios
+        user.setCuentaClabe(request.getCuentaClabe());
+        user.setBankName(request.getBankName());
+        user.setNumeroCuenta(request.getNumeroCuenta());
+
+        User updatedUser = userRepository.save(user);
+        log.info("Cuenta CLABE agregada para usuario UUID={}: {}", UUID, request.getCuentaClabe());
+
+        // Publicar evento solo si cambió la cuenta CLABE
+        if (cuentaClabeChanged) {
+            eventPublisher.publishCuentaClabeAdded(
+                    updatedUser.getUUID(),
+                    updatedUser.getCuentaClabe(),
+                    updatedUser.getBankName(),
+                    updatedUser.getNumeroCuenta()
+            );
+        }
+
+        return convertToDTO(updatedUser);
+    }
+
     @Transactional
     public UserDTO updateUser(String UUID, UserDTO userDTO) {
         User user = userRepository.findByUUID(UUID)
                 .orElseThrow(() -> new RuntimeException("User not found with UUID: " + UUID));
 
-        if (userDTO.getUUID() != null && !userDTO.getUUID().trim().isEmpty()) {
-            user.setUUID(userDTO.getUUID());
+        // Verificar si se está agregando una cuenta CLABE nueva
+        boolean cuentaClabeChanged = false;
+        if (userDTO.getCuentaClabe() != null &&
+                !userDTO.getCuentaClabe().equals(user.getCuentaClabe())) {
+            cuentaClabeChanged = true;
         }
 
-        user.setName(userDTO.getName());
-        user.setLastName(userDTO.getLastName());
-        user.setBankName(userDTO.getBankName());
-        user.setNumeroCuenta(userDTO.getNumeroCuenta());
-        user.setCuentaClabe(userDTO.getCuentaClabe());
+        // Actualizar campos
+        if (userDTO.getName() != null) {
+            user.setName(userDTO.getName());
+        }
+        if (userDTO.getLastName() != null) {
+            user.setLastName(userDTO.getLastName());
+        }
+        if (userDTO.getBankName() != null) {
+            user.setBankName(userDTO.getBankName());
+        }
+        if (userDTO.getNumeroCuenta() != null) {
+            user.setNumeroCuenta(userDTO.getNumeroCuenta());
+        }
+        if (userDTO.getCuentaClabe() != null) {
+            user.setCuentaClabe(userDTO.getCuentaClabe());
+        }
 
         User updatedUser = userRepository.save(user);
+        log.info("Usuario actualizado: UUID={}", UUID);
+
+        // Publicar evento si se agregó una cuenta CLABE
+        if (cuentaClabeChanged && updatedUser.getCuentaClabe() != null) {
+            eventPublisher.publishCuentaClabeAdded(
+                    updatedUser.getUUID(),
+                    updatedUser.getCuentaClabe(),
+                    updatedUser.getBankName(),
+                    updatedUser.getNumeroCuenta()
+            );
+        }
+
         return convertToDTO(updatedUser);
     }
 

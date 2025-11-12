@@ -2,12 +2,14 @@ package com.cuellar.banksservice.controller;
 
 import com.cuellar.banksservice.dto.CreateUserResponse;
 import com.cuellar.banksservice.dto.UserDTO;
+import com.cuellar.banksservice.dto.UpdateCuentaClabeRequest;
 import com.cuellar.banksservice.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import jakarta.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -16,12 +18,6 @@ import java.util.List;
 public class UserController {
 
     private final UserService userService;
-
-    @PostMapping
-    public ResponseEntity<CreateUserResponse> createUser(@RequestBody UserDTO userDTO) {
-        CreateUserResponse response = userService.createUser(userDTO);
-        return ResponseEntity.status(HttpStatus.CREATED).body(response);
-    }
 
     @GetMapping
     public ResponseEntity<List<UserDTO>> getAllUsers() {
@@ -35,11 +31,18 @@ public class UserController {
         return ResponseEntity.ok(user);
     }
 
-    // ELIMINADO: @GetMapping("/id/{id}") - Ya no existe campo id
-
     @PutMapping("/{UUID}")
     public ResponseEntity<UserDTO> updateUser(@PathVariable String UUID, @RequestBody UserDTO userDTO) {
         UserDTO updatedUser = userService.updateUser(UUID, userDTO);
+        return ResponseEntity.ok(updatedUser);
+    }
+
+    // NUEVO ENDPOINT: Agregar/actualizar cuenta CLABE
+    @PostMapping("/{UUID}/cuenta-clabe")
+    public ResponseEntity<UserDTO> addCuentaClabe(
+            @PathVariable String UUID,
+            @Valid @RequestBody UpdateCuentaClabeRequest request) {
+        UserDTO updatedUser = userService.addCuentaClabe(UUID, request);
         return ResponseEntity.ok(updatedUser);
     }
 
