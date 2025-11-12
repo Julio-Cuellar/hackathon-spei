@@ -15,26 +15,24 @@ import lombok.NoArgsConstructor;
 public class User {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @Column(name = "UUID", nullable = true)
+    private String UUID;
 
-    private String userUUID;
-
+    @Column(name = "name")
     private String name;
 
+    @Column(name = "lastName")
     private String lastName;
 
+    @Column(name = "bankName")
     private String bankName;
 
+    @Column(name = "numeroCuenta")
     private String numeroCuenta;
 
-    private String CCV;
+    @Column(name = "cuentaClabe")
+    private String cuentaClabe;
 
-    private String fechaVencimiento;
-
-    private String CLABE;
-
+    @Column(name = "monto")
     private String monto;
-
-
 }
