@@ -44,6 +44,10 @@ public class User {
 
     private String CURP;
 
+    @Column(name = "cuenta_clabe", unique = true, length = 18) // Sin nullable = false
+    private String cuentaClabe;
+
+
     private String PhoneNumber;
 
 

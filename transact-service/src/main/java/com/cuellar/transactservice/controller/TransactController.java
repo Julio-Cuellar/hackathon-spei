@@ -2,7 +2,6 @@ package com.cuellar.transactservice.controller;
 
 import com.cuellar.transactservice.domain.TransactionType;
 import com.cuellar.transactservice.domain.User;
-import com.cuellar.transactservice.dto.CreateUserRequest;
 import com.cuellar.transactservice.dto.PagoServicioRequest;
 import com.cuellar.transactservice.dto.TransactionResponse;
 import com.cuellar.transactservice.dto.TransferenciaRequest;
@@ -50,16 +49,14 @@ public class TransactController {
             @RequestHeader(value = "X-User-UUID", required = false) String userUUID,
             @RequestHeader(value = HttpHeaders.AUTHORIZATION, required = false) String authHeader) {
         String resolved = resolveUserUUID(authHeader, userUUID);
-        User ensured = userService.ensureUser(resolved);
-        UserResponse dto = userService.getAccountByUuid(ensured.getUserUUID());
-        return ResponseEntity.status(HttpStatus.OK).body(dto);
-    }
+        userService.ensureUser(resolved);
 
-    // Crear cuenta manualmente con saldo inicial (no usa UUID del token, es administrativa)
-    @PostMapping("/account")
-    public ResponseEntity<UserResponse> createAccount(@Valid @RequestBody CreateUserRequest request) {
-        UserResponse created = userService.createAccount(request);
-        return ResponseEntity.status(HttpStatus.CREATED).body(created);
+        return userService.findByUUID(resolved)
+                .map(user -> {
+                    UserResponse dto = mapToUserResponse(user);
+                    return ResponseEntity.ok(dto);
+                })
+                .orElseGet(() -> ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build());
     }
 
     // Obtener mi cuenta por UUID del Gateway
@@ -68,7 +65,10 @@ public class TransactController {
             @RequestHeader(value = "X-User-UUID", required = false) String userUUID,
             @RequestHeader(value = HttpHeaders.AUTHORIZATION, required = false) String authHeader) {
         String resolved = resolveUserUUID(authHeader, userUUID);
-        return ResponseEntity.ok(userService.getAccountByUuid(resolved));
+
+        return userService.findByUUID(resolved)
+                .map(user -> ResponseEntity.ok(mapToUserResponse(user)))
+                .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).build());
     }
 
     // Transferencia entre cuentas (usa CLABEs en el body)
@@ -108,5 +108,16 @@ public class TransactController {
     @GetMapping("/transactions/{id}")
     public ResponseEntity<TransactionResponse> getById(@PathVariable Long id) {
         return ResponseEntity.ok(transactionService.getTransactionById(id));
+    }
+
+    // Método auxiliar para mapear User a UserResponse
+    private UserResponse mapToUserResponse(User user) {
+        return UserResponse.builder()
+                .userUUID(user.getUserUUID())
+                .cuentaClabe(user.getCuentaClabe())
+                .saldo(user.getSaldo())
+                .fechaCreacion(user.getFechaCreacion())
+                .activa(user.getActiva())
+                .build();
     }
 }

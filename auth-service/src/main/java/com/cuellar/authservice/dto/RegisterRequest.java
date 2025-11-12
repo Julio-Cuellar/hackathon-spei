@@ -21,6 +21,8 @@ public class RegisterRequest {
 
     private String password;
 
+    private String cuentaClabe;
+
 
     private String RFC;
 

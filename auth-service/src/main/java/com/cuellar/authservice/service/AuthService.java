@@ -46,6 +46,7 @@ public class AuthService {
                 .email(user.getEmail())
                 .RFC(user.getRFC())
                 .CURP(user.getCURP())
+                .cuentaClabe(user.getCuentaClabe())
                 .PhoneNumber(user.getPhoneNumber())
                 .enabled(user.isEnabled())
                 .build();
@@ -84,8 +85,7 @@ public class AuthService {
                 .CURP(request.getCURP())
                 .email(request.getEmail())
                 .passwordHash(passwordEncoder.encode(request.getPassword()))
-                .RFC(request.getRFC())
-                .CURP(request.getCURP())
+                .cuentaClabe(request.getCuentaClabe())
                 .PhoneNumber(request.getPhoneNumber())
                 .enabled(false)
                 .build();

@@ -31,28 +31,28 @@ public class TransactionService {
     @Transactional
     public TransactionResponse createTransferencia(TransferenciaRequest request) {
         // Buscar cuenta origen por CLABE
-        User cuentaOrigen = userRepository.findByCuentaClave(request.getCuentaOrigen())
+        User cuentaOrigen = userRepository.findByCuentaClabe(request.getCuentaOrigen())
                 .orElseThrow(() -> new RuntimeException("Cuenta origen no encontrada: " + request.getCuentaOrigen()));
 
-        // Buscar cuenta destino por CLABE
-        User cuentaDestino = userRepository.findByCuentaClave(request.getCuentaDestino())
-                .orElseThrow(() -> new RuntimeException("Cuenta destino no encontrada: " + request.getCuentaDestino()));
-
-        // Validar que la cuenta origen esté activa (puede enviar dinero)
-        userService.validateAccountCanSend(cuentaOrigen);
+//        // Buscar cuenta destino por CLABE
+//        User cuentaDestino = userRepository.findByCuentaClave(request.getCuentaDestino())
+//                .orElseThrow(() -> new RuntimeException("Cuenta destino no encontrada: " + request.getCuentaDestino()));
+//
+//        // Validar que la cuenta origen esté activa (puede enviar dinero)
+//        userService.validateAccountCanSend(cuentaOrigen);
 
         // Validar que haya saldo suficiente
         if (cuentaOrigen.getSaldo().compareTo(request.getMonto()) < 0) {
             throw new RuntimeException("Saldo insuficiente. Saldo actual: " + cuentaOrigen.getSaldo() + ", Monto a transferir: " + request.getMonto());
         }
-
-        // Actualizar saldos
-        cuentaOrigen.setSaldo(cuentaOrigen.getSaldo().subtract(request.getMonto()));
-        cuentaDestino.setSaldo(cuentaDestino.getSaldo().add(request.getMonto()));
-
-        // Guardar cuentas actualizadas
-        userRepository.save(cuentaOrigen);
-        userRepository.save(cuentaDestino);
+//
+//        // Actualizar saldos
+//        cuentaOrigen.setSaldo(cuentaOrigen.getSaldo().subtract(request.getMonto()));
+//        cuentaDestino.setSaldo(cuentaDestino.getSaldo().add(request.getMonto()));
+//
+//        // Guardar cuentas actualizadas
+//        userRepository.save(cuentaOrigen);
+//        userRepository.save(cuentaDestino);
 
         // Crear la transacción
         Transaction transaction = new Transaction();
@@ -65,9 +65,9 @@ public class TransactionService {
         transaction.setFechaHora(LocalDateTime.now());
         transaction.setStatus("COMPLETADA");
 
-        // Relacionar con las cuentas
-        transaction.setCuentaOrigenAccount(cuentaOrigen);
-        transaction.setCuentaDestinoAccount(cuentaDestino);
+//        // Relacionar con las cuentas
+//        transaction.setCuentaOrigenAccount(cuentaOrigen);
+//        transaction.setCuentaDestinoAccount(cuentaDestino);
 
         Transaction saved = transactionRepository.save(transaction);
         return mapToResponse(saved);

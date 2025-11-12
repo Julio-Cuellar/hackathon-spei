@@ -8,9 +8,26 @@
         <outputRelativeToContentRoot value="true" />
         <module name="api-gateway" />
         <module name="eureka-server" />
-        <module name="financial-struments-service" />
       </profile>
-      <profile name="Annotation profile for banks-service" enabled="true">
+      <profile name="Annotation profile for broker-service" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <processorPath useClasspath="false">
+          <entry name="$MAVEN_REPOSITORY$/org/projectlombok/lombok/1.18.36/lombok-1.18.36.jar" />
+        </processorPath>
+      </profile>
+      <profile name="Annotation profile for auth-service" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <processorPath useClasspath="false">
+          <entry name="$MAVEN_REPOSITORY$/org/projectlombok/lombok/1.18.42/lombok-1.18.42.jar" />
+          <entry name="$MAVEN_REPOSITORY$/org/projectlombok/lombok/1.18.42/lombok-1.18.42.jar" />
+        </processorPath>
+        <module name="auth-service" />
+      </profile>
+      <profile name="Annotation profile for transact-service" enabled="true">
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
@@ -19,10 +36,11 @@
         </processorPath>
         <module name="transact-service" />
         <module name="banks-service" />
-        <module name="auth-service" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel target="17">
+      <module name="broker-service" target="17" />
+      <module name="financial-struments-service" target="17" />
       <module name="transaction-service" target="17" />
     </bytecodeTargetLevel>
   </component>
@@ -31,6 +49,7 @@
       <module name="api-gateway" options="-parameters" />
       <module name="auth-service" options="-parameters" />
       <module name="banks-service" options="-parameters" />
+      <module name="broker-service" options="-parameters" />
       <module name="eureka-server" options="-parameters" />
       <module name="financial-struments-service" options="-parameters" />
       <module name="transact-service" options="-parameters" />

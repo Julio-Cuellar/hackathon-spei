@@ -27,6 +27,8 @@ public class UserDTO {
 
     private String CURP;
 
+    private String cuentaClabe;
+
     private String PhoneNumber;
 
     @CreationTimestamp
