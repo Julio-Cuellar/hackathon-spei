@@ -4,20 +4,17 @@ import jakarta.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.UUID;
 
 @Entity
 @Table(name = "creditos")
 public class Credito {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @Column(name = "ID")
+    private Long ID;
 
-    @Column(name = "uuid", nullable = false, unique = true, length = 36)
-    private String uuid;
-
-    @Column(name = "cuenta_uuid", nullable = false, length = 36)
-    private String cuentaUuid;
+    @Column(name = "UUID", nullable = false, length = 36)
+    private String userUUID;
 
     @Column(name = "banco", nullable = false, length = 100)
     private String banco;
@@ -41,11 +38,12 @@ public class Credito {
     @Column(name = "status", nullable = false)
     private CreditoStatus status = CreditoStatus.ACTIVO;
 
+    // Constructor vacío (OBLIGATORIO para JPA)
     public Credito() {}
 
-    public Credito(String cuentaUuid, String banco, BigDecimal monto, LocalDate fechaCorte, LocalDate fechaPago, BigDecimal tasaInteres) {
-        this.uuid = UUID.randomUUID().toString();
-        this.cuentaUuid = cuentaUuid;
+    // Constructor con parámetros (usado en el Service)
+    public Credito(String userUUID, String banco, BigDecimal monto, LocalDate fechaCorte, LocalDate fechaPago, BigDecimal tasaInteres) {
+        this.userUUID = userUUID;
         this.banco = banco;
         this.monto = monto;
         this.fechaCorte = fechaCorte;
@@ -56,24 +54,18 @@ public class Credito {
     }
 
     @PrePersist
-    public void generateUuid() {
-        if (this.uuid == null) {
-            this.uuid = UUID.randomUUID().toString();
-        }
+    public void setDefaults() {
         if (this.fechaCreacion == null) {
             this.fechaCreacion = LocalDateTime.now();
         }
     }
 
     // Getters y setters
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
+    public Long getID() { return ID; }
+    public void setID(Long ID) { this.ID = ID; }
 
-    public String getUuid() { return uuid; }
-    public void setUuid(String uuid) { this.uuid = uuid; }
-
-    public String getCuentaUuid() { return cuentaUuid; }
-    public void setCuentaUuid(String cuentaUuid) { this.cuentaUuid = cuentaUuid; }
+    public String getUserUUID() { return userUUID; }
+    public void setUserUUID(String userUUID) { this.userUUID = userUUID; }
 
     public String getBanco() { return banco; }
     public void setBanco(String banco) { this.banco = banco; }

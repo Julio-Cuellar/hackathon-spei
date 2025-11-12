@@ -26,14 +26,19 @@ public class CreditoController {
         return ResponseEntity.ok(creditoService.getAllCreditos());
     }
 
-    @GetMapping("/{uuid}")
-    public ResponseEntity<CreditoResponse> getByUuid(@PathVariable String uuid) {
-        return ResponseEntity.ok(creditoService.getByUuid(uuid));
+    @GetMapping("/{id}")
+    public ResponseEntity<CreditoResponse> getById(@PathVariable Long id) {
+        return ResponseEntity.ok(creditoService.getById(id));
     }
 
-    @DeleteMapping("/{uuid}")
-    public ResponseEntity<Void> delete(@PathVariable String uuid) {
-        creditoService.deleteByUuid(uuid);
+    @GetMapping("/user/{userUUID}")
+    public ResponseEntity<List<CreditoResponse>> getByUserUUID(@PathVariable String userUUID) {
+        return ResponseEntity.ok(creditoService.getByUserUUID(userUUID));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
+        creditoService.deleteById(id);
         return ResponseEntity.noContent().build();
     }
 }

@@ -6,7 +6,7 @@ import java.time.LocalDate;
 
 public class CreateCreditoRequest {
     @NotBlank
-    private String cuentaUuid;
+    private String userUUID;
     @NotBlank
     private String banco;
     @NotNull
@@ -18,8 +18,8 @@ public class CreateCreditoRequest {
     @NotNull
     private BigDecimal tasaInteres;
 
-    public String getCuentaUuid() { return cuentaUuid; }
-    public void setCuentaUuid(String cuentaUuid) { this.cuentaUuid = cuentaUuid; }
+    public String getUserUUID() { return userUUID; }
+    public void setUserUUID(String userUUID) { this.userUUID = userUUID; }
     public String getBanco() { return banco; }
     public void setBanco(String banco) { this.banco = banco; }
     public BigDecimal getMonto() { return monto; }

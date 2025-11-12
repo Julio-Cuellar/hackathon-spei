@@ -17,7 +17,7 @@ public class SeguroService {
     @Transactional
     public SeguroResponse createSeguro(CreateSeguroRequest request) {
         Seguro entity = new Seguro(
-                request.getCuentaUuid(),
+                request.getUserUUID(),
                 request.getTipoSeguro(),
                 request.getAseguradora(),
                 request.getNumeroPoliza(),
@@ -34,21 +34,24 @@ public class SeguroService {
         return seguroRepository.findAll().stream().map(this::toResponse).collect(Collectors.toList());
     }
 
-    public SeguroResponse getByUuid(String uuid) {
-        Seguro s = seguroRepository.findByUuid(uuid).orElseThrow(() -> new RuntimeException("Seguro no encontrado"));
+    public SeguroResponse getById(Long id) {
+        Seguro s = seguroRepository.findById(id).orElseThrow(() -> new RuntimeException("Seguro no encontrado"));
         return toResponse(s);
     }
 
+    public List<SeguroResponse> getByUserUUID(String userUUID) {
+        return seguroRepository.findByUserUUID(userUUID).stream().map(this::toResponse).collect(Collectors.toList());
+    }
+
     @Transactional
-    public void deleteByUuid(String uuid) {
-        seguroRepository.findByUuid(uuid)
-                .ifPresent(seguroRepository::delete);
+    public void deleteById(Long id) {
+        seguroRepository.deleteById(id);
     }
 
     private SeguroResponse toResponse(Seguro s) {
         SeguroResponse dto = new SeguroResponse();
-        dto.setUuid(s.getUuid());
-        dto.setCuentaUuid(s.getCuentaUuid());
+        dto.setID(s.getID());
+        dto.setUserUUID(s.getUserUUID());
         dto.setTipoSeguro(s.getTipoSeguro());
         dto.setAseguradora(s.getAseguradora());
         dto.setNumeroPoliza(s.getNumeroPoliza());

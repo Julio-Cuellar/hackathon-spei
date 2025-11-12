@@ -5,8 +5,8 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 public class CreditoResponse {
-    private String uuid;
-    private String cuentaUuid;
+    private Long ID;
+    private String userUUID;
     private String banco;
     private BigDecimal monto;
     private LocalDate fechaCorte;
@@ -15,10 +15,10 @@ public class CreditoResponse {
     private String status;
     private LocalDateTime fechaCreacion;
 
-    public String getUuid() { return uuid; }
-    public void setUuid(String uuid) { this.uuid = uuid; }
-    public String getCuentaUuid() { return cuentaUuid; }
-    public void setCuentaUuid(String cuentaUuid) { this.cuentaUuid = cuentaUuid; }
+    public Long getID() { return ID; }
+    public void setID(Long ID) { this.ID = ID; }
+    public String getUserUUID() { return userUUID; }
+    public void setUserUUID(String userUUID) { this.userUUID = userUUID; }
     public String getBanco() { return banco; }
     public void setBanco(String banco) { this.banco = banco; }
     public BigDecimal getMonto() { return monto; }

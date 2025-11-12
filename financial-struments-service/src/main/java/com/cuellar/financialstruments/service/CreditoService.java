@@ -18,11 +18,12 @@ public class CreditoService {
 
     @Transactional
     public CreditoResponse createCredito(CreateCreditoRequest request) {
-        // Si el usuario está en buró, no puede tener crédito
-        if (buroCreditoRepository.findByCuentaUuid(request.getCuentaUuid()).isPresent())
-            throw new RuntimeException("La cuenta está en buró y no puede obtener un crédito.");
+        // Validar si el usuario está en buró
+        if (buroCreditoRepository.findByUserUUID(request.getUserUUID()).isPresent())
+            throw new RuntimeException("El usuario está en buró y no puede obtener un crédito.");
+
         Credito entity = new Credito(
-                request.getCuentaUuid(),
+                request.getUserUUID(),
                 request.getBanco(),
                 request.getMonto(),
                 request.getFechaCorte(),
@@ -37,21 +38,24 @@ public class CreditoService {
         return creditoRepository.findAll().stream().map(this::toResponse).collect(Collectors.toList());
     }
 
-    public CreditoResponse getByUuid(String uuid) {
-        Credito c = creditoRepository.findByUuid(uuid).orElseThrow(() -> new RuntimeException("Crédito no encontrado"));
+    public CreditoResponse getById(Long id) {
+        Credito c = creditoRepository.findById(id).orElseThrow(() -> new RuntimeException("Crédito no encontrado"));
         return toResponse(c);
     }
 
+    public List<CreditoResponse> getByUserUUID(String userUUID) {
+        return creditoRepository.findByUserUUID(userUUID).stream().map(this::toResponse).collect(Collectors.toList());
+    }
+
     @Transactional
-    public void deleteByUuid(String uuid) {
-        creditoRepository.findByUuid(uuid)
-                .ifPresent(creditoRepository::delete);
+    public void deleteById(Long id) {
+        creditoRepository.deleteById(id);
     }
 
     private CreditoResponse toResponse(Credito c) {
         CreditoResponse dto = new CreditoResponse();
-        dto.setUuid(c.getUuid());
-        dto.setCuentaUuid(c.getCuentaUuid());
+        dto.setID(c.getID());
+        dto.setUserUUID(c.getUserUUID());
         dto.setBanco(c.getBanco());
         dto.setMonto(c.getMonto());
         dto.setFechaCorte(c.getFechaCorte());

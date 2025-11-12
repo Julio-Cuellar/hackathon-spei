@@ -26,14 +26,19 @@ public class HipotecaController {
         return ResponseEntity.ok(hipotecaService.getAllHipotecas());
     }
 
-    @GetMapping("/{uuid}")
-    public ResponseEntity<HipotecaResponse> getByUuid(@PathVariable String uuid) {
-        return ResponseEntity.ok(hipotecaService.getByUuid(uuid));
+    @GetMapping("/{id}")
+    public ResponseEntity<HipotecaResponse> getById(@PathVariable Long id) {
+        return ResponseEntity.ok(hipotecaService.getById(id));
     }
 
-    @DeleteMapping("/{uuid}")
-    public ResponseEntity<Void> delete(@PathVariable String uuid) {
-        hipotecaService.deleteByUuid(uuid);
+    @GetMapping("/user/{userUUID}")
+    public ResponseEntity<List<HipotecaResponse>> getByUserUUID(@PathVariable String userUUID) {
+        return ResponseEntity.ok(hipotecaService.getByUserUUID(userUUID));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
+        hipotecaService.deleteById(id);
         return ResponseEntity.noContent().build();
     }
 }

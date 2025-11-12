@@ -11,18 +11,20 @@ public class BuroCreditoService {
     @Autowired
     private BuroCreditoRepository buroCreditoRepository;
 
-    public boolean isEnBuro(String cuentaUuid) {
-        return buroCreditoRepository.findByCuentaUuid(cuentaUuid).isPresent();
+    public boolean isEnBuro(String userUUID) {
+        return buroCreditoRepository.findByUserUUID(userUUID).isPresent();
     }
 
     @Transactional
-    public void marcarEnBuro(String cuentaUuid) {
-        if (!isEnBuro(cuentaUuid)) buroCreditoRepository.save(new BuroCredito(cuentaUuid));
+    public void marcarEnBuro(String userUUID, String rfc) {
+        if (!isEnBuro(userUUID)) {
+            buroCreditoRepository.save(new BuroCredito(userUUID, rfc));
+        }
     }
 
     @Transactional
-    public void borrarDeBuro(String cuentaUuid) {
-        buroCreditoRepository.findByCuentaUuid(cuentaUuid)
+    public void borrarDeBuro(String userUUID) {
+        buroCreditoRepository.findByUserUUID(userUUID)
                 .ifPresent(buroCreditoRepository::delete);
     }
 }

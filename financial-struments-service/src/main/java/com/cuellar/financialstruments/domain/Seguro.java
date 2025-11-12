@@ -4,20 +4,17 @@ import jakarta.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.UUID;
 
 @Entity
 @Table(name = "seguros")
 public class Seguro {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @Column(name = "ID")
+    private Long ID;
 
-    @Column(name = "uuid", nullable = false, unique = true, length = 36)
-    private String uuid;
-
-    @Column(name = "cuenta_uuid", nullable = false, length = 36)
-    private String cuentaUuid;
+    @Column(name = "UUID", nullable = false, length = 36)
+    private String userUUID;
 
     @Column(name = "tipo_seguro", nullable = false, length = 100)
     private String tipoSeguro;
@@ -48,11 +45,10 @@ public class Seguro {
 
     public Seguro() {}
 
-    public Seguro(String cuentaUuid, String tipoSeguro, String aseguradora, String numeroPoliza,
+    public Seguro(String userUUID, String tipoSeguro, String aseguradora, String numeroPoliza,
                   BigDecimal sumaAsegurada, BigDecimal primaMensual, LocalDate fechaInicio,
                   LocalDate fechaVencimiento) {
-        this.uuid = UUID.randomUUID().toString();
-        this.cuentaUuid = cuentaUuid;
+        this.userUUID = userUUID;
         this.tipoSeguro = tipoSeguro;
         this.aseguradora = aseguradora;
         this.numeroPoliza = numeroPoliza;
@@ -65,24 +61,18 @@ public class Seguro {
     }
 
     @PrePersist
-    public void generateUuid() {
-        if (this.uuid == null) {
-            this.uuid = UUID.randomUUID().toString();
-        }
+    public void setDefaults() {
         if (this.fechaCreacion == null) {
             this.fechaCreacion = LocalDateTime.now();
         }
     }
 
     // Getters y setters
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
+    public Long getID() { return ID; }
+    public void setID(Long ID) { this.ID = ID; }
 
-    public String getUuid() { return uuid; }
-    public void setUuid(String uuid) { this.uuid = uuid; }
-
-    public String getCuentaUuid() { return cuentaUuid; }
-    public void setCuentaUuid(String cuentaUuid) { this.cuentaUuid = cuentaUuid; }
+    public String getUserUUID() { return userUUID; }
+    public void setUserUUID(String userUUID) { this.userUUID = userUUID; }
 
     public String getTipoSeguro() { return tipoSeguro; }
     public void setTipoSeguro(String tipoSeguro) { this.tipoSeguro = tipoSeguro; }

@@ -8,5 +8,5 @@ import java.util.Optional;
 
 @Repository
 public interface BuroCreditoRepository extends JpaRepository<BuroCredito, Long> {
-    Optional<BuroCredito> findByCuentaUuid(String cuentaUuid);
+    Optional<BuroCredito> findByUserUUID(String userUUID);
 }

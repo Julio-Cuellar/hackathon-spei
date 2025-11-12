@@ -5,10 +5,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
-import java.util.Optional;
 
 @Repository
 public interface SeguroRepository extends JpaRepository<Seguro, Long> {
-    Optional<Seguro> findByUuid(String uuid);
-    List<Seguro> findByCuentaUuid(String cuentaUuid);
+    List<Seguro> findByUserUUID(String userUUID);
 }

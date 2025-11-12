@@ -5,8 +5,8 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 public class SeguroResponse {
-    private String uuid;
-    private String cuentaUuid;
+    private Long ID;
+    private String userUUID;
     private String tipoSeguro;
     private String aseguradora;
     private String numeroPoliza;
@@ -17,10 +17,10 @@ public class SeguroResponse {
     private Boolean activo;
     private LocalDateTime fechaCreacion;
 
-    public String getUuid() { return uuid; }
-    public void setUuid(String uuid) { this.uuid = uuid; }
-    public String getCuentaUuid() { return cuentaUuid; }
-    public void setCuentaUuid(String cuentaUuid) { this.cuentaUuid = cuentaUuid; }
+    public Long getID() { return ID; }
+    public void setID(Long ID) { this.ID = ID; }
+    public String getUserUUID() { return userUUID; }
+    public void setUserUUID(String userUUID) { this.userUUID = userUUID; }
     public String getTipoSeguro() { return tipoSeguro; }
     public void setTipoSeguro(String tipoSeguro) { this.tipoSeguro = tipoSeguro; }
     public String getAseguradora() { return aseguradora; }

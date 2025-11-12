@@ -26,14 +26,19 @@ public class SeguroController {
         return ResponseEntity.ok(seguroService.getAllSeguros());
     }
 
-    @GetMapping("/{uuid}")
-    public ResponseEntity<SeguroResponse> getByUuid(@PathVariable String uuid) {
-        return ResponseEntity.ok(seguroService.getByUuid(uuid));
+    @GetMapping("/{id}")
+    public ResponseEntity<SeguroResponse> getById(@PathVariable Long id) {
+        return ResponseEntity.ok(seguroService.getById(id));
     }
 
-    @DeleteMapping("/{uuid}")
-    public ResponseEntity<Void> delete(@PathVariable String uuid) {
-        seguroService.deleteByUuid(uuid);
+    @GetMapping("/user/{userUUID}")
+    public ResponseEntity<List<SeguroResponse>> getByUserUUID(@PathVariable String userUUID) {
+        return ResponseEntity.ok(seguroService.getByUserUUID(userUUID));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
+        seguroService.deleteById(id);
         return ResponseEntity.noContent().build();
     }
 }

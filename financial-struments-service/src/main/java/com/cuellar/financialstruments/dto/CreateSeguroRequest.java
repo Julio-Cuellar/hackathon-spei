@@ -6,7 +6,7 @@ import java.time.LocalDate;
 
 public class CreateSeguroRequest {
     @NotBlank
-    private String cuentaUuid;
+    private String userUUID;
     @NotBlank
     private String tipoSeguro;
     @NotBlank
@@ -22,8 +22,8 @@ public class CreateSeguroRequest {
     @NotNull
     private LocalDate fechaVencimiento;
 
-    public String getCuentaUuid() { return cuentaUuid; }
-    public void setCuentaUuid(String cuentaUuid) { this.cuentaUuid = cuentaUuid; }
+    public String getUserUUID() { return userUUID; }
+    public void setUserUUID(String userUUID) { this.userUUID = userUUID; }
     public String getTipoSeguro() { return tipoSeguro; }
     public void setTipoSeguro(String tipoSeguro) { this.tipoSeguro = tipoSeguro; }
     public String getAseguradora() { return aseguradora; }

@@ -17,7 +17,7 @@ public class HipotecaService {
     @Transactional
     public HipotecaResponse createHipoteca(CreateHipotecaRequest request) {
         Hipoteca entity = new Hipoteca(
-                request.getCuentaUuid(),
+                request.getUserUUID(),
                 request.getBanco(),
                 request.getMonto(),
                 request.getPlazoMeses()
@@ -30,21 +30,24 @@ public class HipotecaService {
         return hipotecaRepository.findAll().stream().map(this::toResponse).collect(Collectors.toList());
     }
 
-    public HipotecaResponse getByUuid(String uuid) {
-        Hipoteca h = hipotecaRepository.findByUuid(uuid).orElseThrow(() -> new RuntimeException("Hipoteca no encontrada"));
+    public HipotecaResponse getById(Long id) {
+        Hipoteca h = hipotecaRepository.findById(id).orElseThrow(() -> new RuntimeException("Hipoteca no encontrada"));
         return toResponse(h);
     }
 
+    public List<HipotecaResponse> getByUserUUID(String userUUID) {
+        return hipotecaRepository.findByUserUUID(userUUID).stream().map(this::toResponse).collect(Collectors.toList());
+    }
+
     @Transactional
-    public void deleteByUuid(String uuid) {
-        hipotecaRepository.findByUuid(uuid)
-                .ifPresent(hipotecaRepository::delete);
+    public void deleteById(Long id) {
+        hipotecaRepository.deleteById(id);
     }
 
     private HipotecaResponse toResponse(Hipoteca h) {
         HipotecaResponse dto = new HipotecaResponse();
-        dto.setUuid(h.getUuid());
-        dto.setCuentaUuid(h.getCuentaUuid());
+        dto.setID(h.getID());
+        dto.setUserUUID(h.getUserUUID());
         dto.setBanco(h.getBanco());
         dto.setMonto(h.getMonto());
         dto.setPlazoMeses(h.getPlazoMeses());
