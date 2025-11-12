@@ -15,6 +15,7 @@
         <module name="eureka-server" />
 >>>>>>> 3ac0a24be7b81356efcbaa5c38d8696f2410f5ae
       </profile>
+<<<<<<< HEAD
       <profile name="Annotation profile for transact-service" enabled="true">
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
@@ -26,6 +27,8 @@
         <module name="transact-service" />
         <module name="auth-service" />
       </profile>
+=======
+>>>>>>> banks-service
       <profile name="Annotation profile for transact-service" enabled="true">
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
@@ -35,6 +38,7 @@
         </processorPath>
         <module name="transact-service" />
         <module name="banks-service" />
+        <module name="auth-service" />
       </profile>
     </annotationProcessing>
 <<<<<<< HEAD
