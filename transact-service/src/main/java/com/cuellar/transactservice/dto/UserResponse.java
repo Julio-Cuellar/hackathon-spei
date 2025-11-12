@@ -15,8 +15,8 @@ import java.time.LocalDateTime;
 public class UserResponse {
 
     private Long id;
-    private String uuid;
-    private String cuentaClave;
+    private String userUUID;
+    private String cuentaClabe;
     private BigDecimal saldo;
     private LocalDateTime fechaCreacion;
     private Boolean activa;

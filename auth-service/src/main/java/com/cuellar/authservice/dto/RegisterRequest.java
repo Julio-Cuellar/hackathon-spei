@@ -12,11 +12,16 @@ public class RegisterRequest {
 
     public String name;
 
+    public String lastName;
+
     public String username;
+
 
     private String email;
 
     private String password;
+
+    private String cuentaClabe;
 
 
     private String RFC;

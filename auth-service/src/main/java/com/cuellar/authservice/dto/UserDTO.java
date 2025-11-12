@@ -11,11 +11,11 @@ import java.util.UUID;
 @Builder
 public class UserDTO {
 
-
-
     private UUID id;
 
     private String name;
+
+    private String lastName;
 
     private String username;
 
@@ -26,6 +26,8 @@ public class UserDTO {
     private String RFC;
 
     private String CURP;
+
+    private String cuentaClabe;
 
     private String PhoneNumber;
 

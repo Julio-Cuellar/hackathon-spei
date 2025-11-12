@@ -7,9 +7,24 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="api-gateway" />
+<<<<<<< HEAD
         <module name="transaction-service" />
         <module name="eureka-server" />
         <module name="financial-struments-service" />
+=======
+        <module name="eureka-server" />
+>>>>>>> 3ac0a24be7b81356efcbaa5c38d8696f2410f5ae
+      </profile>
+      <profile name="Annotation profile for transact-service" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <processorPath useClasspath="false">
+          <entry name="$MAVEN_REPOSITORY$/org/projectlombok/lombok/1.18.42/lombok-1.18.42.jar" />
+          <entry name="$MAVEN_REPOSITORY$/org/projectlombok/lombok/1.18.42/lombok-1.18.42.jar" />
+        </processorPath>
+        <module name="transact-service" />
+        <module name="auth-service" />
       </profile>
       <profile name="Annotation profile for transact-service" enabled="true">
         <sourceOutputDir name="target/generated-sources/annotations" />
@@ -19,19 +34,30 @@
           <entry name="$MAVEN_REPOSITORY$/org/projectlombok/lombok/1.18.42/lombok-1.18.42.jar" />
         </processorPath>
         <module name="transact-service" />
-        <module name="auth-service" />
+        <module name="banks-service" />
       </profile>
     </annotationProcessing>
+<<<<<<< HEAD
     <bytecodeTargetLevel target="17" />
+=======
+    <bytecodeTargetLevel>
+      <module name="transaction-service" target="17" />
+    </bytecodeTargetLevel>
+>>>>>>> 3ac0a24be7b81356efcbaa5c38d8696f2410f5ae
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
       <module name="api-gateway" options="-parameters" />
       <module name="auth-service" options="-parameters" />
+      <module name="banks-service" options="-parameters" />
       <module name="eureka-server" options="-parameters" />
+<<<<<<< HEAD
       <module name="financial-struments-service" options="-parameters" />
       <module name="transact-service" options="-parameters" />
       <module name="transaction-service" options="-parameters" />
+=======
+      <module name="transact-service" options="-parameters" />
+>>>>>>> 3ac0a24be7b81356efcbaa5c38d8696f2410f5ae
     </option>
   </component>
 </project>

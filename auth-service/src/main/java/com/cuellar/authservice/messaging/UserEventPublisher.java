@@ -22,4 +22,7 @@ public class UserEventPublisher {
         // binding name = <bindingId> tal cual en properties
         return streamBridge.send("userCreated-out-0", msg);
     }
+
+
+
 }

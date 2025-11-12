@@ -11,7 +11,19 @@
         <option value="$PROJECT_DIR$/financial-instruments-service/pom.xml" />
         <option value="$PROJECT_DIR$/financial-struments-service/pom.xml" />
         <option value="$PROJECT_DIR$/transact-service/pom.xml" />
+<<<<<<< HEAD
+=======
+        <option value="$PROJECT_DIR$/banks-service/pom.xml" />
+        <option value="$PROJECT_DIR$/brocker_service/pom.xml" />
+>>>>>>> 3ac0a24be7b81356efcbaa5c38d8696f2410f5ae
       </list>
+    </option>
+    <option name="ignoredFiles">
+      <set>
+        <option value="$PROJECT_DIR$/brocker_service/pom.xml" />
+        <option value="$PROJECT_DIR$/financial-struments-service/pom.xml" />
+        <option value="$PROJECT_DIR$/transaction-service/pom.xml" />
+      </set>
     </option>
   </component>
   <component name="ProjectRootManager" version="2" languageLevel="JDK_17" default="true" project-jdk-name="temurin-17" project-jdk-type="JavaSDK">

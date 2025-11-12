@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
@@ -20,11 +21,15 @@ import java.util.UUID;
 public class User {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
+    @GeneratedValue(generator = "UUID")
+    @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
+    @Column(length = 36)
     private UUID id;
 
     @Column(nullable = false)
     private String name;
+
+    private String lastName;
 
     @Column(nullable = false, unique = true)
     private String username;
@@ -38,6 +43,10 @@ public class User {
     private String RFC;
 
     private String CURP;
+
+    @Column(name = "cuenta_clabe", unique = true, length = 18) // Sin nullable = false
+    private String cuentaClabe;
+
 
     private String PhoneNumber;
 
