@@ -9,14 +9,14 @@ import java.util.UUID;
 
 @Entity
 @Table(name = "accounts")
-public class Account {
+public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(name = "uuid", nullable = false, unique = true, length = 36)
-    private String uuid;
+    private String userUUID;
 
     @Column(name = "cuenta_clave", nullable = false, unique = true, length = 18)
     private String cuentaClave;
@@ -36,12 +36,12 @@ public class Account {
     @OneToMany(mappedBy = "cuentaDestinoAccount", fetch = FetchType.LAZY)
     private List<Transaction> transaccionesDestino = new ArrayList<>();
 
-    public Account() {}
+    public User() {}
 
     @PrePersist
     public void generateIdentifiers() {
-        if (this.uuid == null) {
-            this.uuid = UUID.randomUUID().toString();
+        if (this.userUUID == null) {
+            this.userUUID = UUID.randomUUID().toString();
         }
         if (this.cuentaClave == null) {
             this.cuentaClave = generateCuentaClave();
@@ -62,8 +62,8 @@ public class Account {
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 
-    public String getUuid() { return uuid; }
-    public void setUuid(String uuid) { this.uuid = uuid; }
+    public String getUserUUID() { return userUUID; }
+    public void setUserUUID(String uuid) { this.userUUID = uuid; }
 
     public String getCuentaClave() { return cuentaClave; }
     public void setCuentaClave(String cuentaClave) { this.cuentaClave = cuentaClave; }

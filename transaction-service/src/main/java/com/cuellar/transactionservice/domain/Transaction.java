@@ -53,11 +53,11 @@ public class Transaction {
     // RELACIONES CON ACCOUNT
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "cuenta_origen_id")
-    private Account cuentaOrigenAccount;
+    private User cuentaOrigenUser;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "cuenta_destino_id")
-    private Account cuentaDestinoAccount;
+    private User cuentaDestinoUser;
 
     public Transaction() {}
 
@@ -109,9 +109,9 @@ public class Transaction {
     public String getStatus() { return status; }
     public void setStatus(String status) { this.status = status; }
 
-    public Account getCuentaOrigenAccount() { return cuentaOrigenAccount; }
-    public void setCuentaOrigenAccount(Account cuentaOrigenAccount) { this.cuentaOrigenAccount = cuentaOrigenAccount; }
+    public User getCuentaOrigenAccount() { return cuentaOrigenUser; }
+    public void setCuentaOrigenAccount(User cuentaOrigenUser) { this.cuentaOrigenUser = cuentaOrigenUser; }
 
-    public Account getCuentaDestinoAccount() { return cuentaDestinoAccount; }
-    public void setCuentaDestinoAccount(Account cuentaDestinoAccount) { this.cuentaDestinoAccount = cuentaDestinoAccount; }
+    public User getCuentaDestinoAccount() { return cuentaDestinoUser; }
+    public void setCuentaDestinoAccount(User cuentaDestinoUser) { this.cuentaDestinoUser = cuentaDestinoUser; }
 }

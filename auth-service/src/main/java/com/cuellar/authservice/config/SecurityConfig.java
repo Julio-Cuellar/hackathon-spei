@@ -20,10 +20,19 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(authz -> authz
+                        // Permitir todos los métodos OPTIONS (necesario para CORS)
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+
+                        // Permitir acceso sin autenticación a Swagger y OpenAPI
+                        .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html", "/swagger-ui/index.html").permitAll()
+
+                        // Rutas de autenticación (login y registro)
                         .requestMatchers("/api/auth/login", "/api/auth/register").permitAll()
-                        // 👇 permite el logout solo con token válido
+
+                        // Permitir el logout solo con token válido
                         .requestMatchers("/api/auth/logout").authenticated()
+
+                        // Resto de las solicitudes requieren autenticación
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)

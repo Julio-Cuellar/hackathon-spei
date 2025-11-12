@@ -1,18 +1,17 @@
 package com.cuellar.transactionservice.service;
 
-import com.cuellar.transactionservice.domain.Account;
+import com.cuellar.transactionservice.domain.User;
 import com.cuellar.transactionservice.domain.Transaction;
 import com.cuellar.transactionservice.domain.TransactionType;
 import com.cuellar.transactionservice.dto.PagoServicioRequest;
 import com.cuellar.transactionservice.dto.TransactionResponse;
 import com.cuellar.transactionservice.dto.TransferenciaRequest;
-import com.cuellar.transactionservice.repository.AccountRepository;
+import com.cuellar.transactionservice.repository.UserRepository;
 import com.cuellar.transactionservice.repository.TransactionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -24,23 +23,23 @@ public class TransactionService {
     private TransactionRepository transactionRepository;
 
     @Autowired
-    private AccountRepository accountRepository;
+    private UserRepository userRepository;
 
     @Autowired
-    private AccountService accountService;
+    private UserService userService;
 
     @Transactional
     public TransactionResponse createTransferencia(TransferenciaRequest request) {
         // Buscar cuenta origen por CLABE
-        Account cuentaOrigen = accountRepository.findByCuentaClave(request.getCuentaOrigen())
+        User cuentaOrigen = userRepository.findByCuentaClave(request.getCuentaOrigen())
                 .orElseThrow(() -> new RuntimeException("Cuenta origen no encontrada: " + request.getCuentaOrigen()));
 
         // Buscar cuenta destino por CLABE
-        Account cuentaDestino = accountRepository.findByCuentaClave(request.getCuentaDestino())
+        User cuentaDestino = userRepository.findByCuentaClave(request.getCuentaDestino())
                 .orElseThrow(() -> new RuntimeException("Cuenta destino no encontrada: " + request.getCuentaDestino()));
 
         // Validar que la cuenta origen esté activa (puede enviar dinero)
-        accountService.validateAccountCanSend(cuentaOrigen);
+        userService.validateAccountCanSend(cuentaOrigen);
 
         // Validar que haya saldo suficiente
         if (cuentaOrigen.getSaldo().compareTo(request.getMonto()) < 0) {
@@ -52,8 +51,8 @@ public class TransactionService {
         cuentaDestino.setSaldo(cuentaDestino.getSaldo().add(request.getMonto()));
 
         // Guardar cuentas actualizadas
-        accountRepository.save(cuentaOrigen);
-        accountRepository.save(cuentaDestino);
+        userRepository.save(cuentaOrigen);
+        userRepository.save(cuentaDestino);
 
         // Crear la transacción
         Transaction transaction = new Transaction();

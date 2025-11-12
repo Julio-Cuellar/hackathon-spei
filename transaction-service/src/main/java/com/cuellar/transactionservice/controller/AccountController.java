@@ -1,8 +1,8 @@
 package com.cuellar.transactionservice.controller;
 
-import com.cuellar.transactionservice.dto.AccountResponse;
-import com.cuellar.transactionservice.dto.CreateAccountRequest;
-import com.cuellar.transactionservice.service.AccountService;
+import com.cuellar.transactionservice.dto.UserResponse;
+import com.cuellar.transactionservice.dto.CreateUserRequest;
+import com.cuellar.transactionservice.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -16,41 +16,41 @@ import java.util.List;
 public class AccountController {
 
     @Autowired
-    private AccountService accountService;
+    private UserService userService;
 
     @PostMapping
-    public ResponseEntity<AccountResponse> createAccount(@Valid @RequestBody CreateAccountRequest request) {
-        AccountResponse response = accountService.createAccount(request);
+    public ResponseEntity<UserResponse> createAccount(@Valid @RequestBody CreateUserRequest request) {
+        UserResponse response = userService.createAccount(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @GetMapping
-    public ResponseEntity<List<AccountResponse>> getAllAccounts() {
-        List<AccountResponse> accounts = accountService.getAllAccounts();
+    public ResponseEntity<List<UserResponse>> getAllAccounts() {
+        List<UserResponse> accounts = userService.getAllAccounts();
         return ResponseEntity.ok(accounts);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<AccountResponse> getAccountById(@PathVariable Long id) {
-        AccountResponse account = accountService.getAccountById(id);
+    public ResponseEntity<UserResponse> getAccountById(@PathVariable Long id) {
+        UserResponse account = userService.getAccountById(id);
         return ResponseEntity.ok(account);
     }
 
     @GetMapping("/uuid/{uuid}")
-    public ResponseEntity<AccountResponse> getAccountByUuid(@PathVariable String uuid) {
-        AccountResponse account = accountService.getAccountByUuid(uuid);
+    public ResponseEntity<UserResponse> getAccountByUuid(@PathVariable String uuid) {
+        UserResponse account = userService.getAccountByUuid(uuid);
         return ResponseEntity.ok(account);
     }
 
     @GetMapping("/clabe/{cuentaClave}")
-    public ResponseEntity<AccountResponse> getAccountByCuentaClave(@PathVariable String cuentaClave) {
-        AccountResponse account = accountService.getAccountByCuentaClave(cuentaClave);
+    public ResponseEntity<UserResponse> getAccountByCuentaClave(@PathVariable String cuentaClave) {
+        UserResponse account = userService.getAccountByCuentaClave(cuentaClave);
         return ResponseEntity.ok(account);
     }
 
     @PatchMapping("/{id}/toggle-status")
-    public ResponseEntity<AccountResponse> toggleAccountStatus(@PathVariable Long id) {
-        AccountResponse account = accountService.toggleAccountStatus(id);
+    public ResponseEntity<UserResponse> toggleAccountStatus(@PathVariable Long id) {
+        UserResponse account = userService.toggleAccountStatus(id);
         return ResponseEntity.ok(account);
     }
 }
