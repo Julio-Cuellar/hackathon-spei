@@ -9,7 +9,6 @@
         <outputRelativeToContentRoot value="true" />
         <module name="api-gateway" />
         <module name="eureka-server" />
-        <module name="Financial-instruments" />
       </profile>
       <profile name="Annotation profile for broker-service" enabled="true">
         <sourceOutputDir name="target/generated-sources/annotations" />
@@ -17,20 +16,30 @@
         <outputRelativeToContentRoot value="true" />
         <processorPath useClasspath="false">
           <entry name="$MAVEN_REPOSITORY$/org/projectlombok/lombok/1.18.42/lombok-1.18.42.jar" />
-          <entry name="$MAVEN_REPOSITORY$/org/projectlombok/lombok/1.18.42/lombok-1.18.42.jar" />
         </processorPath>
-        <module name="brocker_service" />
+        <module name="broker-service" />
         <module name="auth-service" />
       </profile>
     </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="brocker_service" target="17" />
+      <module name="Financial-instruments" target="17" />
+      <module name="Financial-strument" target="17" />
+      <module name="financial-struments" target="17" />
+      <module name="Financial-struments" target="17" />
+    </bytecodeTargetLevel>
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
       <module name="Financial-instruments" options="-parameters" />
+      <module name="Financial-strument" options="-parameters" />
+      <module name="Financial-struments" options="-parameters" />
       <module name="api-gateway" options="-parameters" />
       <module name="auth-service" options="-parameters" />
       <module name="brocker_service" options="-parameters" />
+      <module name="broker-service" options="-parameters" />
       <module name="eureka-server" options="-parameters" />
+      <module name="financial-struments" options="-parameters" />
     </option>
   </component>
 </project>
