@@ -3,7 +3,7 @@ package com.cuellar.transactionservice.dto;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-public class AccountResponse {
+public class UserResponse {
     private Long id;
     private String uuid;
     private String cuentaClave;
@@ -11,7 +11,7 @@ public class AccountResponse {
     private LocalDateTime fechaCreacion;
     private Boolean activa;
 
-    public AccountResponse() {}
+    public UserResponse() {}
 
     // ==================== GETTERS Y SETTERS ====================
 
