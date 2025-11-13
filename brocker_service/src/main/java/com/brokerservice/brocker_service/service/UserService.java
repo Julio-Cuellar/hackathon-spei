@@ -20,25 +20,18 @@ public class UserService {
 
     private final UserRepository userRepository;
 
-    /**
-     *  ÚNICO MÉTODO PARA CREAR USUARIO
-     * El UUID DEBE venir como parámetro (obligatorio)
-     */
     @Transactional
     public UserResponseDTO createUser(String userUUID, BigDecimal initialBalance) {
         log.info("Creando usuario con UUID recibido: {}", userUUID);
-
-        // Validar que el UUID sea válido
         validateUUID(userUUID);
 
-        // Verificar que no exista ya ese UUID
         if (userRepository.existsById(userUUID)) {
-            log.error(" Usuario ya existe con UUID: {}", userUUID);
+            log.error("Usuario ya existe con UUID: {}", userUUID);
             throw new IllegalArgumentException("Ya existe un usuario con UUID: " + userUUID);
         }
 
         User user = User.builder()
-                .userUUID(userUUID)  // ← UUID recibido como parámetro
+                .userUUID(userUUID)
                 .balance(initialBalance)
                 .build();
 
@@ -48,50 +41,51 @@ public class UserService {
         return mapToResponseDTO(savedUser);
     }
 
-    /**
-     * Sobrecarga del método con balance por defecto
-     */
     @Transactional
     public UserResponseDTO createUser(String userUUID) {
         return createUser(userUUID, BigDecimal.valueOf(10000.00));
     }
 
-    /**
-     * Obtener usuario por UUID
-     */
+    @Transactional
+    public void registerUserFromEvent(String userUUID) {
+        if (userRepository.existsById(userUUID)) {
+            log.warn("⚠️ Usuario {} ya existe", userUUID);
+            return;
+        }
+
+        User user = User.builder()
+                .userUUID(userUUID)
+                .balance(BigDecimal.valueOf(10000.00))
+                .build();
+
+        userRepository.save(user);
+        log.info("💾 Usuario {} guardado en BD con $10,000", userUUID);
+    }
+
     @Transactional(readOnly = true)
     public UserResponseDTO getUserByUUID(String userUUID) {
-        log.debug(" Buscando usuario con UUID: {}", userUUID);
+        log.debug("Buscando usuario con UUID: {}", userUUID);
         User user = findUserEntityByUUID(userUUID);
         return mapToResponseDTO(user);
     }
 
-    /**
-     * Obtener todos los usuarios
-     */
     @Transactional(readOnly = true)
     public List<UserResponseDTO> getAllUsers() {
-        log.debug(" Obteniendo todos los usuarios");
+        log.debug("Obteniendo todos los usuarios");
         return userRepository.findAll().stream()
                 .map(this::mapToResponseDTO)
                 .collect(Collectors.toList());
     }
 
-    /**
-     * Buscar entidad User por UUID (uso interno)
-     */
     @Transactional(readOnly = true)
     public User findUserEntityByUUID(String userUUID) {
         return userRepository.findById(userUUID)
                 .orElseThrow(() -> {
-                    log.error(" Usuario no encontrado con UUID: {}", userUUID);
+                    log.error("Usuario no encontrado con UUID: {}", userUUID);
                     return new IllegalArgumentException("Usuario no encontrado con UUID: " + userUUID);
                 });
     }
 
-    /**
-     * Actualizar balance de usuario
-     */
     @Transactional
     public void updateUserBalance(String userUUID, BigDecimal newBalance) {
         log.debug("💰 Actualizando balance del usuario {} a {}", userUUID, newBalance);
@@ -101,9 +95,6 @@ public class UserService {
         log.info("Balance actualizado correctamente para UUID: {}", userUUID);
     }
 
-    /**
-     * Eliminar usuario
-     */
     @Transactional
     public void deleteUser(String userUUID) {
         log.info("Eliminando usuario con UUID: {}", userUUID);
@@ -114,21 +105,15 @@ public class UserService {
         log.info("Usuario eliminado: {}", userUUID);
     }
 
-    /**
-     * Validar formato UUID
-     */
     private void validateUUID(String uuid) {
         try {
             UUID.fromString(uuid);
         } catch (IllegalArgumentException e) {
-            log.error("UID inválido: {}", uuid);
-            throw new IllegalArgumentException("UUID inválido: " + uuid + ". Formato esperado: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx");
+            log.error("UUID inválido: {}", uuid);
+            throw new IllegalArgumentException("UUID inválido: " + uuid);
         }
     }
 
-    /**
-     * Mapear User entity a DTO de respuesta
-     */
     private UserResponseDTO mapToResponseDTO(User user) {
         return UserResponseDTO.builder()
                 .uuid(user.getUserUUID())

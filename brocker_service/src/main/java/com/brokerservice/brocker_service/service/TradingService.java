@@ -36,13 +36,13 @@ public class TradingService {
      */
     @Transactional
     public TradeResponseDTO executeTrade(TradeRequestDTO request) {
-        log.info("📈 Iniciando operación {} de {} acciones de {} a ${}",
+        log.info(" Iniciando operación {} de {} acciones de {} a ${}",
                 request.getOperationType(), request.getQuantity(),
                 request.getSymbol(), request.getPrice());
 
         validateTradeRequest(request);
 
-        // ✅ CORRECCIÓN: Cambiar findUserEntityById por findUserEntityByUUID
+        //  CORRECCIÓN: Cambiar findUserEntityById por findUserEntityByUUID
         // Y request.getUserId() ahora devuelve String
         User user = userService.findUserEntityByUUID(request.getUserId());  // ← String
         Stock stock = stockService.findStockBySymbol(request.getSymbol());
@@ -70,7 +70,7 @@ public class TradingService {
                 .build();
 
         TradeOperation savedOperation = tradeOperationRepository.save(operation);
-        log.info("✅ Operación ejecutada exitosamente. Nuevo balance: ${}", user.getBalance());
+        log.info(" Operación ejecutada exitosamente. Nuevo balance: ${}", user.getBalance());
 
         return mapToResponseDTO(savedOperation, user.getBalance());
     }
@@ -79,10 +79,10 @@ public class TradingService {
      * Obtener historial de operaciones de un usuario
      */
     @Transactional(readOnly = true)
-    public List<TradeHistoryDTO> getUserTradeHistory(String userUUID) {  // ✅ String, no Long
+    public List<TradeHistoryDTO> getUserTradeHistory(String userUUID) {  //  String, no Long
         log.debug("📋 Obteniendo historial de operaciones para usuario: {}", userUUID);
 
-        // ✅ CORRECCIÓN: Usar método correcto del repository
+        //  CORRECCIÓN: Usar método correcto del repository
         List<TradeOperation> operations = tradeOperationRepository
                 .findByUser_UserUUIDOrderByCreatedAtDesc(userUUID);  // ← Método correcto
 
@@ -95,7 +95,7 @@ public class TradingService {
      * Obtener cantidad disponible de acciones de un usuario
      */
     @Transactional(readOnly = true)
-    public int getAvailableStockQuantity(String userUUID, String symbol) {  // ✅ String, no Long
+    public int getAvailableStockQuantity(String userUUID, String symbol) {  //  String, no Long
         List<TradeOperation> operations = tradeOperationRepository
                 .findByUser_UserUUIDOrderByCreatedAtDesc(userUUID);  // ← Método correcto
 
@@ -114,7 +114,7 @@ public class TradingService {
      */
     private void executeBuy(User user, BigDecimal totalAmount) {
         if (user.getBalance().compareTo(totalAmount) < 0) {
-            log.error("❌ Fondos insuficientes. Balance: ${}, Requerido: ${}",
+            log.error(" Fondos insuficientes. Balance: ${}, Requerido: ${}",
                     user.getBalance(), totalAmount);
             throw new IllegalArgumentException(
                     String.format("Fondos insuficientes. Necesitas $%.2f pero solo tienes $%.2f",
@@ -122,20 +122,20 @@ public class TradingService {
         }
 
         BigDecimal newBalance = user.getBalance().subtract(totalAmount);
-        // ✅ CORRECCIÓN: user.getUserUUID() ya es String, no necesita Long.valueOf()
+        //  CORRECCIÓN: user.getUserUUID() ya es String, no necesita Long.valueOf()
         userService.updateUserBalance(user.getUserUUID(), newBalance);  // ← Ya es String
-        log.debug("💳 Compra ejecutada. Nuevo balance: ${}", newBalance);
+        log.debug(" Compra ejecutada. Nuevo balance: ${}", newBalance);
     }
 
     /**
      * Ejecutar venta de acciones
      */
     private void executeSell(User user, String symbol, Integer quantity, BigDecimal totalAmount) {
-        // ✅ CORRECCIÓN: user.getUserUUID() ya es String
+        //  CORRECCIÓN: user.getUserUUID() ya es String
         int ownedQuantity = getAvailableStockQuantity(user.getUserUUID(), symbol);  // ← Ya es String
 
         if (ownedQuantity < quantity) {
-            log.error("❌ Acciones insuficientes. Tienes: {}, Intentas vender: {}",
+            log.error(" Acciones insuficientes. Tienes: {}, Intentas vender: {}",
                     ownedQuantity, quantity);
             throw new IllegalArgumentException(
                     String.format("No tienes suficientes acciones. Tienes %d pero intentas vender %d",
@@ -143,9 +143,9 @@ public class TradingService {
         }
 
         BigDecimal newBalance = user.getBalance().add(totalAmount);
-        // ✅ CORRECCIÓN: user.getUserUUID() ya es String
+        //  CORRECCIÓN: user.getUserUUID() ya es String
         userService.updateUserBalance(user.getUserUUID(), newBalance);  // ← Ya es String
-        log.debug("💰 Venta ejecutada. Nuevo balance: ${}", newBalance);
+        log.debug(" Venta ejecutada. Nuevo balance: ${}", newBalance);
     }
 
     /**
@@ -185,7 +185,7 @@ public class TradingService {
                 .totalAmount(operation.getTotalAmount())
                 .status(operation.getStatus())
                 .operationTime(operation.getOperationTime())
-                .userUUID(operation.getUser().getUserUUID())  // ✅ CORRECCIÓN: userUUID en lugar de userId
+                .userUUID(operation.getUser().getUserUUID())  //  CORRECCIÓN: userUUID en lugar de userId
                 .remainingBalance(remainingBalance)
                 .build();
     }
@@ -205,7 +205,7 @@ public class TradingService {
                 .symbol(operation.getSymbol())
                 .totalAmount(operation.getTotalAmount())
                 .status(operation.getStatus())
-                .userUUID(operation.getUser().getUserUUID())  // ✅ CORRECCIÓN: userUUID en lugar de userId
+                .userUUID(operation.getUser().getUserUUID())  //  CORRECCIÓN: userUUID en lugar de userId
                 .createdAt(operation.getCreatedAt())
                 .build();
     }
